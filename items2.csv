@@ -134,15 +134,15 @@
 133,S.2.T.7,South,2,Top,7,OPEN / Reserve,OPEN / Reserve,,
 134,S.2.T.8,South,2,Top,8,OPEN / Reserve,OPEN / Reserve,,
 135,S.2.T.9,South,2,Top,9,OPEN / Reserve,OPEN / Reserve,,
-136,S.2.B.1,South,2,Bottom,1,OPEN / Reserve,OPEN / Reserve,,
-137,S.2.B.2,South,2,Bottom,2,OPEN / Reserve,OPEN / Reserve,,
-138,S.2.B.3,South,2,Bottom,3,OPEN / Reserve,OPEN / Reserve,,
-139,S.2.B.4,South,2,Bottom,4,OPEN / Reserve,OPEN / Reserve,,
-140,S.2.B.5,South,2,Bottom,5,OPEN / Reserve,OPEN / Reserve,,
-141,S.2.B.6,South,2,Bottom,6,OPEN / Reserve,OPEN / Reserve,,
-142,S.2.B.7,South,2,Bottom,7,OPEN / Reserve,OPEN / Reserve,,
-143,S.2.B.8,South,2,Bottom,8,OPEN / Reserve,OPEN / Reserve,,
-144,S.2.B.9,South,2,Bottom,9,OPEN / Reserve,OPEN / Reserve,,
+136,S.2.B.1,South,2,Bottom,1,Farming - Crops,Bamboo,,
+137,S.2.B.2,South,2,Bottom,2,Farming - Crops,Cocoa Beans,,
+138,S.2.B.3,South,2,Bottom,3,Farming - Crops,Cactus,,
+139,S.2.B.4,South,2,Bottom,4,Farming - Crops,Glow Berries,,
+140,S.2.B.5,South,2,Bottom,5,Farming - Food & Meats,Apples,,
+141,S.2.B.6,South,2,Bottom,6,Farming - Food & Meats,Baked Goods (Cookies/Cake/Pies),,
+142,S.2.B.7,South,2,Bottom,7,Farming - Food & Meats,Golden Apples (All),,
+143,S.2.B.8,South,2,Bottom,8,Farming - Food & Meats,Golden Carrots,,
+144,S.2.B.9,South,2,Bottom,9,Farming - Food & Meats,OPEN / Reserve,,
 145,S.3.T.1,South,3,Top,1,Farming - Crops,Wheat & Seeds,,
 146,S.3.T.2,South,3,Top,2,Farming - Crops,Beetroot & Seeds,Yes,Yes
 147,S.3.T.3,South,3,Top,3,Farming - Crops,Carrots,,
@@ -158,7 +158,7 @@
 157,S.3.B.4,South,3,Bottom,4,Farming - Food & Meats,Cooked Fish,Yes,Yes
 158,S.3.B.5,South,3,Bottom,5,Farming - Food & Meats,Honey Bottles / Honeycomb,Yes,Yes
 159,S.3.B.6,South,3,Bottom,6,Farming - Food & Meats,Mushrooms,Yes,Yes
-160,S.3.B.7,South,3,Bottom,7,Farming - Food & Meats,Golden Foods / Stews,,
+160,S.3.B.7,South,3,Bottom,7,Farming - Food & Meats,Stews & Soups (All),,
 161,S.3.B.8,South,3,Bottom,8,Farming - Food & Meats,Bread,,
 162,S.3.B.9,South,3,Bottom,9,Farming - Food & Meats,Eggs,,
 181,W.1.T.1,West,1,Top,1,Mob Drops (Common),Rotten Flesh,,
