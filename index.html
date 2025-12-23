@@ -195,7 +195,7 @@
     </div>
     <div class="bd diagramWrap">
       <div class="legend">
-        The green dot means that column has at least one defined chest entry in <span class="mono">itesm2.csv</span>.
+        The green dot means that column has at least one defined chest entry in <span class="mono">items2.csv</span>.
         Click a search result to highlight its column.
       </div>
 
@@ -472,13 +472,13 @@
 
     let text;
     try{
-      const res = await fetch("itesm2.csv", { cache: "no-store" });
+      const res = await fetch("items2.csv", { cache: "no-store" });
       if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
       text = await res.text();
     }catch(e){
       showError(
-        `Couldn't load itesm2.csv.\n\n` +
-        `Make sure this HTML file and itesm2.csv are in the SAME directory on a web server.\n` +
+        `Couldn't load items2.csv.\n\n` +
+        `Make sure this HTML file and items2.csv are in the SAME directory on a web server.\n` +
         `Error: ${e.message}`
       );
       $("stat").textContent = "Load failed";
@@ -487,7 +487,7 @@
 
     const table = parseCSV(text);
     if (!table.length || table.length < 2){
-      showError("itesm2.csv loaded, but it looks empty (or missing a header row).");
+      showError("items2.csv loaded, but it looks empty (or missing a header row).");
       $("stat").textContent = "0 loaded";
       return;
     }
