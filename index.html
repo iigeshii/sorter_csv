@@ -1,0 +1,1229 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Minecraft Storage Map (CSV)</title>
+  <style>
+    :root{
+      --bg:#0b0f14;
+      --panel:#111826;
+      --panel2:#0f1724;
+      --text:#e6edf3;
+      --muted:#9fb0c0;
+      --border:#223042;
+      --accent:#7aa2ff;
+      --good:#46d39a;
+      --warn:#ffcc66;
+      --bad:#ff6b6b;
+      --empty:#3a4a60;
+      --temp:#b48cff;
+      --dne:#ff8fa3;
+      --shadow: 0 12px 40px rgba(0,0,0,.35);
+      --radius: 14px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background: radial-gradient(1200px 600px at 10% 0%, rgba(122,162,255,.12), transparent 55%),
+                  radial-gradient(1000px 500px at 90% 15%, rgba(70,211,154,.08), transparent 50%),
+                  var(--bg);
+      color:var(--text);
+      font-family:var(--sans);
+    }
+    header{
+      padding:20px 18px 14px;
+      border-bottom:1px solid var(--border);
+      background: linear-gradient(to bottom, rgba(17,24,38,.85), rgba(17,24,38,.55));
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(10px);
+    }
+    .topbar{
+      display:flex;
+      gap:14px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+      max-width:1400px;
+      margin:0 auto;
+    }
+    .title{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      min-width:260px;
+    }
+    .title h1{
+      font-size:18px;
+      margin:0;
+      letter-spacing:.2px;
+    }
+    .title .sub{
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.2;
+    }
+    .controls{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:flex-end;
+      flex:1;
+    }
+    input[type="text"]{
+      background: rgba(255,255,255,.03);
+      border:1px solid var(--border);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:12px;
+      min-width:280px;
+      outline:none;
+    }
+    input[type="text"]:focus{border-color: rgba(122,162,255,.55); box-shadow:0 0 0 3px rgba(122,162,255,.15)}
+    button, .btn{
+      background: rgba(122,162,255,.12);
+      border:1px solid rgba(122,162,255,.35);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:600;
+      transition: transform .05s ease, background .15s ease;
+      white-space:nowrap;
+    }
+    button:hover{ background: rgba(122,162,255,.18) }
+    button:active{ transform: translateY(1px) }
+    .btn-secondary{
+      background: rgba(255,255,255,.04);
+      border:1px solid var(--border);
+      font-weight:600;
+    }
+    .btn-secondary:hover{ background: rgba(255,255,255,.06) }
+    .toggles{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .chip{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 10px;
+      background: rgba(255,255,255,.03);
+      border:1px solid var(--border);
+      border-radius:999px;
+      color:var(--muted);
+      font-size:12px;
+      user-select:none;
+      cursor:pointer;
+    }
+    .chip input{ accent-color: var(--accent); }
+    main{
+      max-width:1400px;
+      margin:0 auto;
+      padding:16px 18px 60px;
+      display:grid;
+      grid-template-columns: 380px 1fr;
+      gap:16px;
+    }
+    @media (max-width: 1050px){
+      main{ grid-template-columns: 1fr; }
+    }
+
+    .panel{
+      background: linear-gradient(to bottom, rgba(17,24,38,.75), rgba(17,24,38,.55));
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .panel .hd{
+      padding:12px 14px;
+      border-bottom:1px solid var(--border);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .panel .hd h2{
+      margin:0;
+      font-size:13px;
+      letter-spacing:.35px;
+      text-transform:uppercase;
+      color:var(--muted);
+    }
+    .panel .bd{ padding:12px 14px; }
+
+    textarea{
+      width:100%;
+      min-height:180px;
+      resize: vertical;
+      background: rgba(255,255,255,.03);
+      border:1px solid var(--border);
+      border-radius:12px;
+      color:var(--text);
+      padding:10px 12px;
+      font-family: var(--mono);
+      font-size:12px;
+      outline:none;
+    }
+    textarea:focus{ border-color: rgba(122,162,255,.55); box-shadow:0 0 0 3px rgba(122,162,255,.15) }
+
+    .small{
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.35;
+    }
+
+    .results{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .result{
+      border:1px solid var(--border);
+      border-radius:12px;
+      padding:10px 10px;
+      background: rgba(255,255,255,.02);
+      cursor:pointer;
+      transition: background .12s ease, border-color .12s ease;
+    }
+    .result:hover{ background: rgba(255,255,255,.04); border-color: rgba(122,162,255,.25) }
+    .result .top{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:8px;
+      margin-bottom:6px;
+    }
+    .result .id{
+      font-family: var(--mono);
+      font-weight:700;
+      font-size:12px;
+      color: var(--text);
+    }
+    .badge{
+      font-family: var(--mono);
+      font-size:11px;
+      padding:2px 8px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      color: var(--muted);
+      background: rgba(255,255,255,.02);
+      white-space:nowrap;
+    }
+    .badge.good{ color: var(--good); border-color: rgba(70,211,154,.35); background: rgba(70,211,154,.08) }
+    .badge.warn{ color: var(--warn); border-color: rgba(255,204,102,.35); background: rgba(255,204,102,.07) }
+    .badge.bad{  color: var(--bad);  border-color: rgba(255,107,107,.35); background: rgba(255,107,107,.07) }
+    .badge.temp{ color: var(--temp); border-color: rgba(180,140,255,.35); background: rgba(180,140,255,.07) }
+    .badge.dne{  color: var(--dne);  border-color: rgba(255,143,163,.35); background: rgba(255,143,163,.07) }
+
+    .result .desc{
+      font-size:12px;
+      color: var(--text);
+      line-height:1.25;
+    }
+    .result .meta{
+      margin-top:6px;
+      color: var(--muted);
+      font-size:11px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .mapWrap{
+      padding:12px 14px 18px;
+    }
+    .walls{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:14px;
+    }
+    .wall{
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      background: rgba(15,23,36,.55);
+      overflow:hidden;
+    }
+    .wall .wallHd{
+      padding:10px 12px;
+      border-bottom:1px solid var(--border);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .wallTitle{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .wallTitle .name{
+      font-weight:800;
+      letter-spacing:.2px;
+    }
+    .wallTitle .range{
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size:12px;
+    }
+    .wallBody{
+      padding:12px;
+      overflow:auto;
+    }
+    .cols{
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+    }
+    .colCard{
+      min-width: 210px;
+      border:1px solid var(--border);
+      border-radius: 14px;
+      background: rgba(255,255,255,.02);
+      overflow:hidden;
+    }
+    .colCard .colHd{
+      padding:10px 10px;
+      border-bottom:1px solid var(--border);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      position: sticky;
+      top: 0;
+      background: rgba(17,24,38,.75);
+      backdrop-filter: blur(8px);
+    }
+    .colCard .colHd .colName{
+      font-weight:900;
+      font-family: var(--mono);
+      letter-spacing:.4px;
+    }
+    .colCard .colHd .count{
+      color: var(--muted);
+      font-size:11px;
+    }
+    .clusters{
+      padding:10px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+    .clusterBox{
+      border:1px solid var(--border);
+      border-radius: 14px;
+      overflow:hidden;
+      background: rgba(255,255,255,.02);
+    }
+    .clusterBox .clHd{
+      padding:8px 10px;
+      border-bottom:1px solid var(--border);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      color: var(--muted);
+      font-size:11px;
+    }
+    .clusterBox .clHd .left{
+      display:flex; gap:8px; align-items:center; flex-wrap:wrap;
+    }
+    .clusterBox .grid{
+      padding:10px;
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:8px;
+    }
+    .cell{
+      border:1px solid var(--border);
+      border-radius:12px;
+      padding:8px 8px;
+      background: rgba(255,255,255,.02);
+      cursor:pointer;
+      transition: transform .05s ease, background .12s ease, border-color .12s ease;
+      min-height:68px;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      outline:none;
+      position: relative;
+    }
+    .cell:hover{
+      background: rgba(255,255,255,.04);
+      border-color: rgba(122,162,255,.25);
+    }
+    .cell:active{ transform: translateY(1px) }
+    .cell .tiny{
+      font-size:10px;
+      color: var(--muted);
+      font-family: var(--mono);
+      display:flex;
+      justify-content:space-between;
+      gap:8px;
+    }
+    .cell .label{
+      font-size:12px;
+      line-height:1.15;
+      font-weight:700;
+      color: var(--text);
+      word-break: break-word;
+    }
+    .cell .cat{
+      font-size:10.5px;
+      color: var(--muted);
+      line-height:1.15;
+      word-break: break-word;
+    }
+    .cell.empty{
+      border-style:dashed;
+      color: var(--muted);
+    }
+    .cell .flagRow{
+      display:flex; gap:6px; flex-wrap:wrap;
+      margin-top:auto;
+    }
+    .flag{
+      font-family: var(--mono);
+      font-size:10px;
+      padding:1px 6px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      color: var(--muted);
+      background: rgba(255,255,255,.02);
+    }
+    .flag.locked{ color: var(--good); border-color: rgba(70,211,154,.35); background: rgba(70,211,154,.08) }
+    .flag.framed{ color: var(--accent); border-color: rgba(122,162,255,.35); background: rgba(122,162,255,.08) }
+    .flag.temp{ color: var(--temp); border-color: rgba(180,140,255,.35); background: rgba(180,140,255,.08) }
+    .flag.dne{ color: var(--dne); border-color: rgba(255,143,163,.35); background: rgba(255,143,163,.08) }
+
+    .cell.highlight{
+      border-color: rgba(122,162,255,.85) !important;
+      box-shadow: 0 0 0 4px rgba(122,162,255,.18);
+      background: rgba(122,162,255,.08);
+    }
+    .cell.match{
+      border-color: rgba(70,211,154,.65);
+      box-shadow: 0 0 0 3px rgba(70,211,154,.14);
+    }
+
+    .details{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      padding:12px 14px;
+      border-top:1px solid var(--border);
+      background: rgba(15,23,36,.55);
+    }
+    .details .row{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .details .k{
+      color: var(--muted);
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.35px;
+    }
+    .details .v{
+      font-family: var(--mono);
+      font-size:12px;
+      color: var(--text);
+      word-break:break-word;
+    }
+    .copy{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .toast{
+      position: fixed;
+      left: 50%;
+      bottom: 16px;
+      transform: translateX(-50%);
+      background: rgba(17,24,38,.92);
+      border:1px solid var(--border);
+      padding:10px 12px;
+      border-radius: 999px;
+      color: var(--text);
+      box-shadow: var(--shadow);
+      opacity:0;
+      pointer-events:none;
+      transition: opacity .18s ease, transform .18s ease;
+      font-size:12px;
+    }
+    .toast.show{
+      opacity:1;
+      transform: translateX(-50%) translateY(-6px);
+    }
+    .muted{ color:var(--muted) }
+    .mono{ font-family: var(--mono) }
+    .hr{ height:1px; background:var(--border); margin:10px 0; }
+  </style>
+</head>
+<body>
+<header>
+  <div class="topbar">
+    <div class="title">
+      <h1>Minecraft Storage Map (CSV)</h1>
+      <div class="sub">Search items ➜ click a result ➜ it highlights the chest on the wall map.</div>
+    </div>
+    <div class="controls">
+      <input id="search" type="text" placeholder="Search: item, category, chest id… (e.g., 'prismarine', 'B2-7', 'Quartz')" />
+      <div class="toggles">
+        <label class="chip" title="Only show matches on the map (hide non-matching chests)">
+          <input id="onlyMatches" type="checkbox" />
+          Only matches
+        </label>
+        <label class="chip" title="Include EMPTY/Reserve entries in search results">
+          <input id="includeEmpty" type="checkbox" checked />
+          Include EMPTY
+        </label>
+      </div>
+      <button id="btnClear" class="btn-secondary">Clear</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- LEFT: Data + Results -->
+  <section class="panel">
+    <div class="hd">
+      <h2>Load CSV</h2>
+      <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+        <input id="file" type="file" accept=".csv,text/csv" style="color:var(--muted); max-width:220px;" />
+        <button id="btnLoad">Load from textbox</button>
+      </div>
+    </div>
+    <div class="bd">
+      <div class="small">
+        Paste your CSV (including the header row) below, or upload the CSV file.
+        This page expects at least these headers:
+        <span class="mono">ChestID, Column, Cluster, Number, Categories, Description, Locked, Framed</span>.
+      </div>
+      <div class="hr"></div>
+      <textarea id="csv" spellcheck="false" placeholder="Paste CSV here…"></textarea>
+      <div class="hr"></div>
+
+      <div style="display:flex; gap:10px; align-items:center; justify-content:space-between; flex-wrap:wrap;">
+        <div class="small"><span id="stats" class="mono muted">0 rows loaded</span></div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button id="btnCopyLink" class="btn-secondary" title="Copies a shareable state (CSV is NOT embedded; it stores a tiny hash + search text).">Copy share link</button>
+          <button id="btnExportFiltered" class="btn-secondary" title="Downloads filtered results as CSV">Export results CSV</button>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+      <div class="panel" style="box-shadow:none;">
+        <div class="hd" style="border-bottom:1px solid var(--border);">
+          <h2>Search Results</h2>
+          <span id="resultCount" class="small mono muted">0</span>
+        </div>
+        <div class="bd">
+          <div id="results" class="results"></div>
+          <div id="noResults" class="small muted" style="display:none; padding:8px 2px;">
+            No matches. Try searching for part of an item name, like <span class="mono">“quartz”</span> or <span class="mono">“B2-7”</span>.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RIGHT: Map -->
+  <section class="panel">
+    <div class="hd">
+      <h2>Wall Map</h2>
+      <div class="small muted">East: A–I • South: J–O • West: P–X</div>
+    </div>
+
+    <div class="mapWrap">
+      <div id="walls" class="walls"></div>
+    </div>
+
+    <div class="details" id="details">
+      <div class="row">
+        <div>
+          <div class="k">Selected chest</div>
+          <div class="v" id="selId">—</div>
+        </div>
+        <div>
+          <div class="k">Wall / Column / Cluster / Slot</div>
+          <div class="v" id="selLoc">—</div>
+        </div>
+      </div>
+      <div class="row">
+        <div style="flex:1; min-width:260px;">
+          <div class="k">Description</div>
+          <div class="v" id="selDesc">—</div>
+        </div>
+        <div style="flex:1; min-width:260px;">
+          <div class="k">Category</div>
+          <div class="v" id="selCat">—</div>
+        </div>
+      </div>
+      <div class="copy">
+        <button id="btnCopyLoc">Copy location</button>
+        <span class="small muted" id="copyHint">Tip: click any chest tile to see details + copy its locator.</span>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="toast" class="toast">Copied!</div>
+
+<script>
+/** ---------- Utilities ---------- **/
+const $ = (id) => document.getElementById(id);
+
+function toast(msg){
+  const t = $("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 1100);
+}
+
+function wallForColumn(col){
+  const c = col.toUpperCase();
+  if (c >= "A" && c <= "I") return "East";
+  if (c >= "J" && c <= "O") return "South";
+  if (c >= "P" && c <= "X") return "West";
+  return "Other";
+}
+
+function normalize(s){
+  return (s ?? "").toString().trim();
+}
+function isTruthyYes(s){
+  s = normalize(s).toUpperCase();
+  return s === "YES" || s === "TRUE" || s === "1";
+}
+function isEmptyLike(row){
+  const desc = normalize(row.Description).toUpperCase();
+  const cat  = normalize(row.Categories).toUpperCase();
+  const locked = normalize(row.Locked).toUpperCase();
+  // Your CSV uses "EMPTY" in Locked, and also "OPEN / Reserve" categories/desc
+  return desc.includes("OPEN / RESERVE") ||
+         cat.includes("OPEN / RESERVE") ||
+         locked === "EMPTY" ||
+         desc === "" && cat === "";
+}
+function statusBadge(row){
+  const locked = normalize(row.Locked).toUpperCase();
+  if (locked === "TEMP") return {cls:"temp", text:"TEMP"};
+  if (locked === "DNE")  return {cls:"dne",  text:"DNE"};
+  if (locked === "EMPTY") return {cls:"warn", text:"EMPTY"};
+  return {cls:"good", text:"OK"};
+}
+function safeCSVCell(s){
+  s = (s ?? "").toString();
+  if (s.includes('"')) s = s.replaceAll('"','""');
+  if (/[,"\n]/.test(s)) return `"${s}"`;
+  return s;
+}
+
+/** ---------- CSV Parser (handles quotes) ---------- **/
+function parseCSV(text){
+  // Returns array of arrays (rows), handling quotes and commas/newlines.
+  const rows = [];
+  let row = [];
+  let cur = "";
+  let inQuotes = false;
+
+  for (let i=0; i<text.length; i++){
+    const ch = text[i];
+    const next = text[i+1];
+
+    if (inQuotes){
+      if (ch === '"' && next === '"'){
+        cur += '"'; i++;
+      } else if (ch === '"'){
+        inQuotes = false;
+      } else {
+        cur += ch;
+      }
+    } else {
+      if (ch === '"'){
+        inQuotes = true;
+      } else if (ch === ","){
+        row.push(cur); cur = "";
+      } else if (ch === "\n"){
+        row.push(cur); rows.push(row);
+        row = []; cur = "";
+      } else if (ch === "\r"){
+        // ignore \r (Windows)
+      } else {
+        cur += ch;
+      }
+    }
+  }
+  row.push(cur);
+  rows.push(row);
+
+  // Trim completely empty tail rows
+  while (rows.length && rows[rows.length-1].every(c => normalize(c)==="")) rows.pop();
+  return rows;
+}
+
+function rowsToObjects(table){
+  const header = table[0].map(h => normalize(h));
+  const objs = [];
+  for (let r=1; r<table.length; r++){
+    const arr = table[r];
+    if (arr.every(c => normalize(c)==="")) continue;
+    const o = {};
+    for (let c=0; c<header.length; c++){
+      o[header[c] || ("Col"+c)] = arr[c] ?? "";
+    }
+    objs.push(o);
+  }
+  return objs;
+}
+
+/** ---------- Data Model ---------- **/
+let RAW = [];          // raw objects
+let INDEX = new Map(); // key => row
+let CELLS = new Map(); // key => DOM element
+let SELECTED_KEY = null;
+
+function keyOf(row){
+  const col = normalize(row.Column).toUpperCase();
+  const cl  = normalize(row.Cluster);
+  const no  = normalize(row.Number);
+  return `${col}|${cl}|${no}`;
+}
+
+/** ---------- Rendering ---------- **/
+function buildWalls(){
+  const wallsEl = $("walls");
+  wallsEl.innerHTML = "";
+
+  const groups = {
+    East: { range:"A–I", cols: [] },
+    South:{ range:"J–O", cols: [] },
+    West: { range:"P–X", cols: [] },
+  };
+
+  // Collect columns present (but keep the full expected ranges in order)
+  const allCols = new Set(RAW.map(r => normalize(r.Column).toUpperCase()).filter(Boolean));
+  const colOrder = (start, end) => {
+    const out = [];
+    for (let c=start.charCodeAt(0); c<=end.charCodeAt(0); c++){
+      out.push(String.fromCharCode(c));
+    }
+    return out;
+  };
+
+  const eastCols  = colOrder("A","I");
+  const southCols = colOrder("J","O");
+  const westCols  = colOrder("P","X");
+
+  groups.East.cols  = eastCols;
+  groups.South.cols = southCols;
+  groups.West.cols  = westCols;
+
+  // Precompute max cluster per column from data
+  const maxClusterByCol = new Map();
+  for (const r of RAW){
+    const col = normalize(r.Column).toUpperCase();
+    const cl  = parseInt(normalize(r.Cluster), 10);
+    if (!col || !Number.isFinite(cl)) continue;
+    maxClusterByCol.set(col, Math.max(maxClusterByCol.get(col)||0, cl));
+  }
+
+  // Render each wall
+  for (const wallName of ["East","South","West"]){
+    const wall = document.createElement("div");
+    wall.className = "wall";
+
+    const hd = document.createElement("div");
+    hd.className = "wallHd";
+
+    const title = document.createElement("div");
+    title.className = "wallTitle";
+    title.innerHTML = `<div class="name">${wallName} Wall</div><div class="range">${groups[wallName].range}</div>`;
+    hd.appendChild(title);
+
+    const hint = document.createElement("div");
+    hint.className = "small muted";
+    hint.textContent = "Scroll horizontally to see all columns.";
+    hd.appendChild(hint);
+
+    const body = document.createElement("div");
+    body.className = "wallBody";
+
+    const cols = document.createElement("div");
+    cols.className = "cols";
+
+    for (const col of groups[wallName].cols){
+      const colCard = document.createElement("div");
+      colCard.className = "colCard";
+      colCard.id = `col-${col}`;
+
+      const colHd = document.createElement("div");
+      colHd.className = "colHd";
+
+      const count = RAW.filter(r => normalize(r.Column).toUpperCase() === col).length;
+      colHd.innerHTML = `<div class="colName">${col}</div><div class="count">${count ? count+" entries" : "no data"}</div>`;
+      colCard.appendChild(colHd);
+
+      const clustersWrap = document.createElement("div");
+      clustersWrap.className = "clusters";
+
+      const maxCl = Math.max(2, maxClusterByCol.get(col) || 0); // default show at least 2 clusters (your current layout)
+      for (let cl=1; cl<=maxCl; cl++){
+        const clusterBox = document.createElement("div");
+        clusterBox.className = "clusterBox";
+        clusterBox.id = `cluster-${col}-${cl}`;
+
+        const clHd = document.createElement("div");
+        clHd.className = "clHd";
+        clHd.innerHTML = `<div class="left"><span class="mono">Cluster ${cl}</span></div><div class="mono muted">${wallName}</div>`;
+        clusterBox.appendChild(clHd);
+
+        const grid = document.createElement("div");
+        grid.className = "grid";
+
+        for (let n=1; n<=9; n++){
+          const dummyRow = {
+            Column: col, Cluster: String(cl), Number: String(n),
+            ChestID: "", Categories:"", Description:"", Locked:"", Framed:""
+          };
+          const k = keyOf(dummyRow);
+          const real = INDEX.get(k);
+
+          const cell = document.createElement("button");
+          cell.className = "cell";
+          cell.type = "button";
+          cell.dataset.key = k;
+
+          const row = real || dummyRow;
+          const chestId = normalize(row.ChestID) || "—";
+          const desc = normalize(row.Description) || "(empty)";
+          const cat  = normalize(row.Categories) || "";
+
+          // Flags / styling
+          const locked = isTruthyYes(row.Locked);
+          const framed = isTruthyYes(row.Framed);
+          const badge = statusBadge(row);
+          const emptyLike = !real || isEmptyLike(row);
+
+          if (emptyLike) cell.classList.add("empty");
+
+          const top = document.createElement("div");
+          top.className = "tiny";
+          top.innerHTML = `<span>${chestId}</span><span>#${n}</span>`;
+
+          const label = document.createElement("div");
+          label.className = "label";
+          label.textContent = desc;
+
+          const catEl = document.createElement("div");
+          catEl.className = "cat";
+          catEl.textContent = cat;
+
+          const flags = document.createElement("div");
+          flags.className = "flagRow";
+          const status = document.createElement("span");
+          status.className = `flag ${badge.cls}`;
+          status.textContent = badge.text;
+          flags.appendChild(status);
+
+          if (locked) {
+            const f = document.createElement("span");
+            f.className = "flag locked";
+            f.textContent = "LOCKED";
+            flags.appendChild(f);
+          }
+          if (framed) {
+            const f = document.createElement("span");
+            f.className = "flag framed";
+            f.textContent = "FRAMED";
+            flags.appendChild(f);
+          }
+          if (normalize(row.Locked).toUpperCase() === "TEMP"){
+            const f = document.createElement("span");
+            f.className = "flag temp";
+            f.textContent = "TEMP";
+            flags.appendChild(f);
+          }
+          if (normalize(row.Locked).toUpperCase() === "DNE"){
+            const f = document.createElement("span");
+            f.className = "flag dne";
+            f.textContent = "DNE";
+            flags.appendChild(f);
+          }
+
+          cell.appendChild(top);
+          cell.appendChild(label);
+          cell.appendChild(catEl);
+          cell.appendChild(flags);
+
+          cell.addEventListener("click", () => selectChest(k, true));
+
+          CELLS.set(k, cell);
+          grid.appendChild(cell);
+        }
+
+        clusterBox.appendChild(grid);
+        clustersWrap.appendChild(clusterBox);
+      }
+
+      colCard.appendChild(clustersWrap);
+      cols.appendChild(colCard);
+    }
+
+    body.appendChild(cols);
+    wall.appendChild(hd);
+    wall.appendChild(body);
+    wallsEl.appendChild(wall);
+  }
+}
+
+function updateStats(){
+  $("stats").textContent = `${RAW.length} rows loaded`;
+}
+
+/** ---------- Selection + Search ---------- **/
+function selectChest(key, scrollIntoView){
+  // clear previous highlight
+  if (SELECTED_KEY && CELLS.get(SELECTED_KEY)) CELLS.get(SELECTED_KEY).classList.remove("highlight");
+
+  SELECTED_KEY = key;
+
+  const cell = CELLS.get(key);
+  if (cell) cell.classList.add("highlight");
+
+  const row = INDEX.get(key) || null;
+
+  const [col, cl, n] = key.split("|");
+  const wall = wallForColumn(col);
+  const chestId = row ? normalize(row.ChestID) : "—";
+  const desc = row ? normalize(row.Description) : "(no entry)";
+  const cat  = row ? normalize(row.Categories) : "";
+
+  $("selId").textContent  = chestId !== "—" ? chestId : `${col}${cl}-${n}`;
+  $("selLoc").textContent = `${wall} / Column ${col} / Cluster ${cl} / Slot ${n}`;
+  $("selDesc").textContent = desc || "—";
+  $("selCat").textContent  = cat || "—";
+
+  // store for copy
+  $("btnCopyLoc").dataset.copy = `${chestId !== "—" ? chestId : `${col}${cl}-${n}`} (Wall: ${wall}, Column: ${col}, Cluster: ${cl}, Slot: ${n})`;
+
+  if (scrollIntoView && cell){
+    // Scroll the column card into view nicely
+    const colCard = $("col-"+col);
+    if (colCard) colCard.scrollIntoView({behavior:"smooth", block:"nearest", inline:"center"});
+    setTimeout(()=> cell.scrollIntoView({behavior:"smooth", block:"center", inline:"center"}), 120);
+  }
+}
+
+function runSearch(){
+  const q = normalize($("search").value).toLowerCase();
+  const onlyMatches = $("onlyMatches").checked;
+  const includeEmpty = $("includeEmpty").checked;
+
+  // Clear existing match marks
+  for (const el of CELLS.values()) el.classList.remove("match");
+
+  const results = [];
+  if (q.length){
+    for (const row of RAW){
+      const hay = [
+        normalize(row.ChestID),
+        normalize(row.Column),
+        normalize(row.Cluster),
+        normalize(row.Number),
+        normalize(row.Categories),
+        normalize(row.Description),
+        normalize(row.Locked),
+        normalize(row.Framed),
+      ].join(" ").toLowerCase();
+
+      if (!hay.includes(q)) continue;
+      if (!includeEmpty && isEmptyLike(row)) continue;
+
+      results.push(row);
+      const k = keyOf(row);
+      const cell = CELLS.get(k);
+      if (cell) cell.classList.add("match");
+    }
+  } else {
+    // No query: no results list (and show full map)
+  }
+
+  // If onlyMatches: hide non-matching cells
+  for (const [k, el] of CELLS.entries()){
+    if (!onlyMatches || !q.length){
+      el.style.display = "";
+    } else {
+      el.style.display = el.classList.contains("match") ? "" : "none";
+    }
+  }
+
+  renderResults(results, q);
+}
+
+function renderResults(rows, q){
+  const resultsEl = $("results");
+  const noResults = $("noResults");
+  resultsEl.innerHTML = "";
+
+  if (!q.length){
+    $("resultCount").textContent = "0";
+    noResults.style.display = "none";
+    return;
+  }
+
+  // Sort: best guess -> put non-empty first, then by column/cluster/number
+  rows.sort((a,b) => {
+    const ae = isEmptyLike(a), be = isEmptyLike(b);
+    if (ae !== be) return ae ? 1 : -1;
+    const ac = normalize(a.Column).toUpperCase(), bc = normalize(b.Column).toUpperCase();
+    if (ac !== bc) return ac.localeCompare(bc);
+    const acl = parseInt(normalize(a.Cluster),10) || 0;
+    const bcl = parseInt(normalize(b.Cluster),10) || 0;
+    if (acl !== bcl) return acl - bcl;
+    const an = parseInt(normalize(a.Number),10) || 0;
+    const bn = parseInt(normalize(b.Number),10) || 0;
+    return an - bn;
+  });
+
+  $("resultCount").textContent = String(rows.length);
+  noResults.style.display = rows.length ? "none" : "block";
+
+  for (const row of rows.slice(0, 250)){ // cap to keep UI snappy
+    const k = keyOf(row);
+    const [col, cl, n] = k.split("|");
+    const wall = wallForColumn(col);
+    const badge = statusBadge(row);
+
+    const card = document.createElement("div");
+    card.className = "result";
+    card.addEventListener("click", () => selectChest(k, true));
+
+    const top = document.createElement("div");
+    top.className = "top";
+    const id = normalize(row.ChestID) || `${col}${cl}-${n}`;
+    top.innerHTML = `<div class="id">${id}</div><div class="badge ${badge.cls}">${badge.text}</div>`;
+
+    const desc = document.createElement("div");
+    desc.className = "desc";
+    desc.textContent = normalize(row.Description) || "(no description)";
+
+    const meta = document.createElement("div");
+    meta.className = "meta";
+    meta.innerHTML = `
+      <span class="mono">${wall}</span>
+      <span class="mono">Col ${col}</span>
+      <span class="mono">Cluster ${cl}</span>
+      <span class="mono">Slot ${n}</span>
+      <span class="mono">${normalize(row.Categories) || ""}</span>
+    `;
+
+    card.appendChild(top);
+    card.appendChild(desc);
+    card.appendChild(meta);
+    resultsEl.appendChild(card);
+  }
+
+  if (rows.length > 250){
+    const more = document.createElement("div");
+    more.className = "small muted";
+    more.style.padding = "6px 2px 0";
+    more.textContent = `Showing first 250 matches (refine your search to narrow it down).`;
+    resultsEl.appendChild(more);
+  }
+}
+
+/** ---------- Load + Export ---------- **/
+function loadCSVText(text){
+  const table = parseCSV(text);
+  if (!table.length || table.length < 2){
+    toast("CSV looks empty.");
+    return;
+  }
+  const objs = rowsToObjects(table);
+
+  // Basic cleanup: accept alternative header casing
+  // Map into normalized schema
+  const mapped = objs.map(o => {
+    // handle headers like "#", "Column1" etc – keep original too
+    const get = (...names) => {
+      for (const n of names){
+        if (o[n] !== undefined) return o[n];
+        // try case-insensitive match
+        const key = Object.keys(o).find(k => k.toLowerCase() === n.toLowerCase());
+        if (key) return o[key];
+      }
+      return "";
+    };
+    return {
+      _raw: o,
+      ChestID: get("ChestID"),
+      Column:  get("Column"),
+      Cluster: get("Cluster"),
+      Number:  get("Number"),
+      Categories: get("Categories"),
+      Description: get("Description"),
+      Locked: get("Locked"),
+      Framed: get("Framed"),
+    };
+  }).filter(r => normalize(r.Column) && normalize(r.Cluster) && normalize(r.Number));
+
+  RAW = mapped;
+  INDEX = new Map();
+  CELLS = new Map();
+  SELECTED_KEY = null;
+
+  for (const r of RAW){
+    INDEX.set(keyOf(r), r);
+  }
+
+  buildWalls();
+  updateStats();
+  runSearch();
+
+  // Auto-select first non-empty row if any
+  const first = RAW.find(r => !isEmptyLike(r)) || RAW[0];
+  if (first) selectChest(keyOf(first), false);
+
+  toast("Loaded!");
+}
+
+function downloadText(filename, text){
+  const blob = new Blob([text], {type:"text/plain;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+function exportFilteredResults(){
+  const q = normalize($("search").value).toLowerCase();
+  const includeEmpty = $("includeEmpty").checked;
+
+  let rows = [];
+  if (q.length){
+    rows = RAW.filter(r => {
+      const hay = [
+        normalize(r.ChestID),
+        normalize(r.Column),
+        normalize(r.Cluster),
+        normalize(r.Number),
+        normalize(r.Categories),
+        normalize(r.Description),
+        normalize(r.Locked),
+        normalize(r.Framed),
+      ].join(" ").toLowerCase();
+      if (!hay.includes(q)) return false;
+      if (!includeEmpty && isEmptyLike(r)) return false;
+      return true;
+    });
+  } else {
+    rows = RAW.slice();
+  }
+
+  const headers = ["ChestID","Column","Cluster","Number","Categories","Description","Locked","Framed"];
+  const lines = [headers.join(",")];
+  for (const r of rows){
+    lines.push(headers.map(h => safeCSVCell(r[h] ?? "")).join(","));
+  }
+  downloadText("storage_results.csv", lines.join("\n"));
+  toast("Exported CSV");
+}
+
+function tinyHash(str){
+  // Non-crypto tiny hash for share links (so the URL isn’t huge).
+  let h = 2166136261;
+  for (let i=0; i<str.length; i++){
+    h ^= str.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return (h >>> 0).toString(16);
+}
+
+function copyShareLink(){
+  // We DON’T embed the CSV (too big). This creates a useful “state” link:
+  // - current search text
+  // - includeEmpty, onlyMatches
+  // - a tiny hash of the CSV so players can confirm they loaded the same file
+  const csv = $("csv").value || "";
+  const hash = csv ? tinyHash(csv) : "no_csv";
+  const params = new URLSearchParams();
+  params.set("q", $("search").value || "");
+  params.set("empty", $("includeEmpty").checked ? "1" : "0");
+  params.set("only", $("onlyMatches").checked ? "1" : "0");
+  params.set("csv", hash);
+
+  const url = `${location.origin}${location.pathname}?${params.toString()}`;
+  navigator.clipboard.writeText(url).then(()=>toast("Share link copied"));
+}
+
+/** ---------- Events ---------- **/
+$("btnLoad").addEventListener("click", () => {
+  const text = $("csv").value;
+  loadCSVText(text);
+});
+
+$("file").addEventListener("change", async (e) => {
+  const f = e.target.files?.[0];
+  if (!f) return;
+  const text = await f.text();
+  $("csv").value = text;
+  loadCSVText(text);
+});
+
+$("search").addEventListener("input", () => runSearch());
+$("onlyMatches").addEventListener("change", () => runSearch());
+$("includeEmpty").addEventListener("change", () => runSearch());
+
+$("btnClear").addEventListener("click", () => {
+  $("search").value = "";
+  $("onlyMatches").checked = false;
+  $("includeEmpty").checked = true;
+  runSearch();
+  toast("Cleared");
+});
+
+$("btnCopyLoc").addEventListener("click", () => {
+  const txt = $("btnCopyLoc").dataset.copy || "";
+  if (!txt) return;
+  navigator.clipboard.writeText(txt).then(()=>toast("Location copied"));
+});
+
+$("btnExportFiltered").addEventListener("click", () => exportFilteredResults());
+$("btnCopyLink").addEventListener("click", () => copyShareLink());
+
+/** ---------- Boot: read URL state ---------- **/
+(function boot(){
+  const params = new URLSearchParams(location.search);
+  const q = params.get("q");
+  const empty = params.get("empty");
+  const only = params.get("only");
+  const csvHash = params.get("csv");
+  if (q !== null) $("search").value = q;
+  if (empty !== null) $("includeEmpty").checked = empty === "1";
+  if (only !== null) $("onlyMatches").checked = only === "1";
+
+  if (csvHash){
+    $("stats").textContent = `0 rows loaded • link expects CSV hash: ${csvHash}`;
+  }
+})();
+</script>
+</body>
+</html>
