@@ -390,11 +390,12 @@ tbody tr.active{
 }
 
 @media (max-width: 600px){
-  .centerGrid{
-    grid-template-columns: 140px 1fr;
+  .locator{
+    gap: 6px;
   }
 
-  .locator{
-    margin-left: -6px;
+  .locBlock{
+    gap: 4px;
   }
 }
+
