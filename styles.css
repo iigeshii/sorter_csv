@@ -388,3 +388,13 @@ tbody tr.active{
   .grid{ grid-template-columns: 1fr; }
   .tableMap{ min-height: 540px; }
 }
+
+@media (max-width: 600px){
+  .centerGrid{
+    grid-template-columns: 140px 1fr;
+  }
+
+  .locator{
+    margin-left: -6px;
+  }
+}
