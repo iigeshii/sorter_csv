@@ -144,7 +144,7 @@
 143,H2-8,H,2,8,Core Stone & Deepslate,Polished Deepslate,Yes,Yes
 144,H2-9,H,2,9,Core Stone & Deepslate,Smooth Stone,Yes,Yes
 145,I1-1,I,1,1,Exotic & Biome Stone,Amethyst Block,EMPTY,
-146,I1-2,I,1,2,Exotic & Biome Stone,Amethyst Shard,EMPTY,
+146,I1-2,I,1,2,Exotic & Biome Stone,Amethyst Shard,Yes,Yes
 147,I1-3,I,1,3,Exotic & Biome Stone,Basalt,Yes,Yes
 148,I1-4,I,1,4,Exotic & Biome Stone,Blackstone,Yes,Yes
 149,I1-5,I,1,5,Exotic & Biome Stone,Blackstone Bricks,EMPTY,
@@ -164,7 +164,7 @@
 163,J1-1,J,1,1,Exotic & Biome Stone,Polished Basalt,EMPTY,
 164,J1-2,J,1,2,Exotic & Biome Stone,Polished Blackstone,EMPTY,
 165,J1-3,J,1,3,Exotic & Biome Stone,Smooth Basalt,EMPTY,
-166,J1-4,J,1,4,Exotic & Biome Stone,,EMPTY,
+166,J1-4,J,1,4,Exotic & Biome Stone,Purpur Blocks (All Variants),Yes,Yes
 167,J1-5,J,1,5,Exotic & Biome Stone,,EMPTY,
 168,J1-6,J,1,6,Exotic & Biome Stone,,EMPTY,
 169,J1-7,J,1,7,Exotic & Biome Stone,,EMPTY,
@@ -377,7 +377,7 @@
 376,U2-7,U,2,7,Mob Drops & Loot,Ghast Tear,Yes,Yes
 377,U2-8,U,2,8,Mob Drops & Loot,Glow Ink Sac,Yes,Yes
 378,U2-9,U,2,9,Mob Drops & Loot,Gunpowder,Yes,Yes
-379,V1-1,V,1,1,Rare & Boss Mob Drops,Popped Chorus Fruit,,
+379,V1-1,V,1,1,Rare & Boss Mob Drops,Popped Chorus Fruit,Yes,Yes
 380,V1-2,V,1,2,Rare & Boss Mob Drops,Shulker Shell,,
 381,V1-3,V,1,3,Rare & Boss Mob Drops,Totem of Undying,Yes,Yes
 382,V1-4,V,1,4,Rare & Boss Mob Drops,Wither Skeleton Skull,,
