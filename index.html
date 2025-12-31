@@ -510,20 +510,19 @@
     const row = getRow(chestId);
     if (!row) return;
 
-    document.querySelectorAll(".slot.selected").forEach(x => x.classList.remove("selected"));
-    document.querySelectorAll(".pod.selected").forEach(x => x.classList.remove("selected"));
-
-    const slotEl = document.querySelector(`.slot[data-chest="${CSS.escape(chestId)}"]`);
-    if (slotEl) slotEl.classList.add("selected");
-
-    const podEl = slotEl?.closest(".pod");
-    if (podEl) podEl.classList.add("selected");
-
+    // update state first
     SELECTED = chestId;
     setDetails(row);
 
+    // IMPORTANT: re-render so dim/opacity updates for the new selection
+    // (renderAll() is fine too, but walls-only is usually enough)
+    renderWalls();
+
+    // Scroll to the newly selected slot (must happen after renderWalls)
+    const slotEl = document.querySelector(`.slot[data-chest="${CSS.escape(chestId)}"]`);
     slotEl?.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
   }
+
 
   // --------------------------
   // DIRECTORY RENDER
