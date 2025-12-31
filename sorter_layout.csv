@@ -269,7 +269,7 @@
 268,O2-7,O,2,7,Farming - Meats & Animal Products,,EMPTY,
 269,O2-8,O,2,8,Farming - Meats & Animal Products,,EMPTY,
 270,O2-9,O,2,9,Farming - Meats & Animal Products,,EMPTY,
-271,P1-1,P,1,1,Utilities,Armor Stands,EMPTY,
+271,P1-1,P,1,1,Utilities,Armor Stands,Yes,Yes
 272,P1-2,P,1,2,Utilities,Beds (All Colors),Yes,Yes
 273,P1-3,P,1,3,Utilities,Bells,EMPTY,
 274,P1-4,P,1,4,Utilities,Doors (All),Yes,Yes
