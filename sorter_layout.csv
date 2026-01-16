@@ -198,7 +198,7 @@
 197,K2-8,K,2,8,"Sand, Gravel & Sandstone",Sandstone,Yes,Yes
 198,K2-9,K,2,9,"Sand, Gravel & Sandstone",Smooth Sandstone,Yes,Yes
 199,L1-1,L,1,1,Cold & Frozen Terrain,Blue Ice,Yes,Yes
-200,L1-2,L,1,2,Cold & Frozen Terrain,Ice,EMPTY,
+200,L1-2,L,1,2,Cold & Frozen Terrain,Ice,,Yes,Yes
 201,L1-3,L,1,3,Cold & Frozen Terrain,Packed Ice,Yes,Yes
 202,L1-4,L,1,4,Cold & Frozen Terrain,Powder Snow Bucket,Yes,Yes
 203,L1-5,L,1,5,Cold & Frozen Terrain,Snow,Yes,Yes
