@@ -1,13 +1,13 @@
 #,ChestID,Column,Cluster,Number,Categories,Description,Locked,Framed
-1,A1-1,A,1,1,Base Terrain - Dirt Family,Clay,Yes,Yes
-2,A1-2,A,1,2,Base Terrain - Dirt Family,Coarse Dirt,EMPTY,
-3,A1-3,A,1,3,Base Terrain - Dirt Family,Dirt,Yes,Yes
-4,A1-4,A,1,4,Base Terrain - Dirt Family,Dirt (Overflow),Yes,Yes
-5,A1-5,A,1,5,Base Terrain - Dirt Family,Grass Block,Yes,Yes
-6,A1-6,A,1,6,Base Terrain - Dirt Family,Mud & Packed Mud,EMPTY,
-7,A1-7,A,1,7,Base Terrain - Dirt Family,Podzol,Yes,Yes
-8,A1-8,A,1,8,Base Terrain - Dirt Family,Rooted Dirt,EMPTY,
-9,A1-9,A,1,9,Base Terrain - Dirt Family,Dirt Path,Yes,Yes
+1,A1-1,A,1,1,Containers & Portable Storage,Chests,Yes,Yes
+2,A1-2,A,1,2,Containers & Portable Storage,Copper Chest,Yes,Yes
+3,A1-3,A,1,3,Containers & Portable Storage,Ender Chest,,
+4,A1-4,A,1,4,,Barrels,,
+5,A1-5,A,1,5,Containers & Portable Storage,Shulker Boxes,Yes,Yes
+6,A1-6,A,1,6,,,,
+7,A1-7,A,1,7,,,,
+8,A1-8,A,1,8,,,,
+9,A1-9,A,1,9,,,,
 10,A2-1,A,2,1,Armor & Equipment,Boots,Yes,Yes
 11,A2-2,A,2,2,Armor & Equipment,Chestplates,Yes,Yes
 12,A2-3,A,2,3,Armor & Equipment,Elytra,EMPTY,
@@ -17,15 +17,15 @@
 16,A2-7,A,2,7,Armor & Equipment,Saddles,Yes,Yes
 17,A2-8,A,2,8,Armor & Equipment,Shields,Yes,Yes
 18,A2-9,A,2,9,Armor & Equipment,,EMPTY,
-19,B1-1,B,1,1,UNUSED,,EMPTY,
-20,B1-2,B,1,2,UNUSED,,EMPTY,
-21,B1-3,B,1,3,UNUSED,,EMPTY,
-22,B1-4,B,1,4,UNUSED,,EMPTY,
-23,B1-5,B,1,5,UNUSED,,EMPTY,
-24,B1-6,B,1,6,UNUSED,,EMPTY,
-25,B1-7,B,1,7,UNUSED,,EMPTY,
-26,B1-8,B,1,8,UNUSED,,EMPTY,
-27,B1-9,B,1,9,UNUSED,,EMPTY,
+19,B1-1,B,1,1,Base Terrain - Dirt Family,Clay,Yes,Yes
+20,B1-2,B,1,2,Base Terrain - Dirt Family,Grass Block,Yes,Yes
+21,B1-3,B,1,3,Base Terrain - Dirt Family,Coarse Dirt,,
+22,B1-4,B,1,4,Base Terrain - Dirt Family,Dirt (Overflow),,
+23,B1-5,B,1,5,Base Terrain - Dirt Family,Dirt,Yes,Yes
+24,B1-6,B,1,6,Base Terrain - Dirt Family,Mud & Packed Mud,,
+25,B1-7,B,1,7,Base Terrain - Dirt Family,Podzol,Yes,Yes
+26,B1-8,B,1,8,Base Terrain - Dirt Family,Rooted Dirt,,
+27,B1-9,B,1,9,Base Terrain - Dirt Family,Dirt Path,Yes,Yes
 28,B2-1,B,2,1,Weapons & Combat Gear,Arrows,Yes,Yes
 29,B2-2,B,2,2,Weapons & Combat Gear,Axes,Yes,Yes
 30,B2-3,B,2,3,Weapons & Combat Gear,Bows,Yes,Yes
@@ -62,15 +62,15 @@
 61,D1-7,D,1,7,Enchanting & Magic,,EMPTY,
 62,D1-8,D,1,8,Enchanting & Magic,,EMPTY,
 63,D1-9,D,1,9,Enchanting & Magic,,EMPTY,
-64,D2-1,D,2,1,Storage & Item Transport,Chests,Yes,Yes
-65,D2-2,D,2,2,Storage & Item Transport,Copper Chest,Yes,Yes
-66,D2-3,D,2,3,Storage & Item Transport,Dispenser,Yes,Yes
-67,D2-4,D,2,4,Storage & Item Transport,Dropper,Yes,Yes
-68,D2-5,D,2,5,Storage & Item Transport,Ender Chest,Yes,Yes
-69,D2-6,D,2,6,Storage & Item Transport,Hopper,Yes,Yes
-70,D2-7,D,2,7,Storage & Item Transport,Shulker Boxes,Yes,Yes
-71,D2-8,D,2,8,Storage & Item Transport,,EMPTY,
-72,D2-9,D,2,9,Storage & Item Transport,,EMPTY,
+64,D2-1,D,2,1,UNUSED,,,
+65,D2-2,D,2,2,UNUSED,,,
+66,D2-3,D,2,3,UNUSED,,,
+67,D2-4,D,2,4,UNUSED,,,
+68,D2-5,D,2,5,UNUSED,,,
+69,D2-6,D,2,6,UNUSED,,,
+70,D2-7,D,2,7,UNUSED,,,
+71,D2-8,D,2,8,UNUSED,,,
+72,D2-9,D,2,9,UNUSED,,,
 73,E1-1,E,1,1,Lighting & Illumination,Candles (All),Yes,Yes
 74,E1-2,E,1,2,Lighting & Illumination,End Rods,Yes,Yes
 75,E1-3,E,1,3,Lighting & Illumination,Froglights (All Types),EMPTY,
@@ -198,7 +198,7 @@
 197,K2-8,K,2,8,"Sand, Gravel & Sandstone",Sandstone,Yes,Yes
 198,K2-9,K,2,9,"Sand, Gravel & Sandstone",Smooth Sandstone,Yes,Yes
 199,L1-1,L,1,1,Cold & Frozen Terrain,Blue Ice,Yes,Yes
-200,L1-2,L,1,2,Cold & Frozen Terrain,Ice,,Yes,Yes
+200,L1-2,L,1,2,Cold & Frozen Terrain,Ice,,Yes
 201,L1-3,L,1,3,Cold & Frozen Terrain,Packed Ice,Yes,Yes
 202,L1-4,L,1,4,Cold & Frozen Terrain,Powder Snow Bucket,Yes,Yes
 203,L1-5,L,1,5,Cold & Frozen Terrain,Snow,Yes,Yes
@@ -332,15 +332,15 @@
 331,S1-7,S,1,7,Nether Materials,Magma Columns (Addon),Yes,Yes
 332,S1-8,S,1,8,Nether Materials,Nether Wart & Wart Block,Yes,Yes
 333,S1-9,S,1,9,Nether Materials,Netherrack,Yes,Yes
-334,S2-1,S,2,1,Redstone & Logic,Buttons (All),Yes,Yes
-335,S2-2,S,2,2,Redstone & Logic,Comparator,Yes,Yes
-336,S2-3,S,2,3,Redstone & Logic,Levers,Yes,Yes
-337,S2-4,S,2,4,Redstone & Logic,Lightning Rods,EMPTY,
-338,S2-5,S,2,5,Redstone & Logic,Observer,Yes,Yes
-339,S2-6,S,2,6,Redstone & Logic,Piston,EMPTY,
-340,S2-7,S,2,7,Redstone & Logic,Pressure Plates (All),EMPTY,
-341,S2-8,S,2,8,Redstone & Logic,Redstone Dust,Yes,Yes
-342,S2-9,S,2,9,Redstone & Logic,Redstone Torch,Yes,Yes
+334,S2-1,S,2,1,Redstone Devices,Buttons (All),Yes,Yes
+335,S2-2,S,2,2,Redstone Devices,Comparator,Yes,Yes
+336,S2-3,S,2,3,Redstone Devices,Repeater,Yes,Yes
+337,S2-4,S,2,4,Redstone Devices,Dispenser,,
+338,S2-5,S,2,5,Redstone Devices,Observer,Yes,Yes
+339,S2-6,S,2,6,Redstone Devices,Dropper,,
+340,S2-7,S,2,7,Redstone Devices,Pressure Plates (All),EMPTY,
+341,S2-8,S,2,8,Redstone Devices,Redstone Dust,Yes,Yes
+342,S2-9,S,2,9,Redstone Devices,Redstone Torch,Yes,Yes
 343,T1-1,T,1,1,Nether Materials,Obsidian & Crying Obsidian,Yes,Yes
 344,T1-2,T,1,2,Nether Materials,Quartz Ore & Quartz,Yes,Yes
 345,T1-3,T,1,3,Nether Materials,Shroomlight,EMPTY,
@@ -350,15 +350,15 @@
 349,T1-7,T,1,7,Nether Materials,Warped Nylium,Yes,Yes
 350,T1-8,T,1,8,Nether Materials,Warped Stems & Planks,Yes,Yes
 351,T1-9,T,1,9,Nether Materials,,EMPTY,
-352,T2-1,T,2,1,Redstone & Logic,Repeater,Yes,Yes
-353,T2-2,T,2,2,Redstone & Logic,Sticky Piston,EMPTY,
-354,T2-3,T,2,3,Redstone & Logic,,EMPTY,
-355,T2-4,T,2,4,Redstone & Logic,,EMPTY,
-356,T2-5,T,2,5,Redstone & Logic,,EMPTY,
-357,T2-6,T,2,6,Redstone & Logic,,EMPTY,
-358,T2-7,T,2,7,Redstone & Logic,,EMPTY,
-359,T2-8,T,2,8,Redstone & Logic,,EMPTY,
-360,T2-9,T,2,9,Redstone & Logic,,EMPTY,
+352,T2-1,T,2,1,Redstone Devices,Levers,Yes,Yes
+353,T2-2,T,2,2,Redstone Devices,Sticky Piston,EMPTY,
+354,T2-3,T,2,3,Redstone Devices,Piston,EMPTY,
+355,T2-4,T,2,4,Redstone Devices,Lightning Rods,EMPTY,
+356,T2-5,T,2,5,Redstone Devices,Hopper,Yes,Yes
+357,T2-6,T,2,6,Redstone Devices,,EMPTY,
+358,T2-7,T,2,7,Redstone Devices,,EMPTY,
+359,T2-8,T,2,8,Redstone Devices,,EMPTY,
+360,T2-9,T,2,9,Redstone Devices,,EMPTY,
 361,U1-1,U,1,1,Rare & Boss Mob Drops,Armadillo Scute,Yes,Yes
 362,U1-2,U,1,2,Rare & Boss Mob Drops,Blaze Powder,,
 363,U1-3,U,1,3,Rare & Boss Mob Drops,Chorus Fruit,,
