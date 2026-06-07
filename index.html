@@ -249,7 +249,7 @@
     .grid {
       display: grid;
       grid-template-columns: repeat(3, var(--slot));
-      grid-template-rows: repeat(3, var(--slot));
+      grid-auto-rows: var(--slot);
       gap: 6px;
       justify-content: center;
     }
@@ -517,6 +517,7 @@
   </div>
 
   <div class="centerControls">
+    <select id="profileSelect" class="btn" title="Sorter profile"></select>
     <input id="search" type="search" placeholder="Search item or category…" />
     <button class="btn" id="clear">Clear</button>
   </div>
@@ -569,6 +570,8 @@
   // --------------------------
   function updateURLHash() {
     const params = new URLSearchParams();
+    // Only surface ?profile= when there's a choice — keeps the public (single-profile) URL clean
+    if (PROFILES.length > 1 && CURRENT_PROFILE) params.set("profile", CURRENT_PROFILE);
     if (ACTIVE_FILTER) params.set("q", ACTIVE_FILTER);
     if (SELECTED) params.set("chest", SELECTED);
     const str = params.toString();
@@ -581,21 +584,20 @@
     const params = new URLSearchParams(hash);
     const q = params.get("q");
     const chest = params.get("chest");
+    const profile = params.get("profile");
     if (q) { elSearch.value = q; ACTIVE_FILTER = q; }
     if (chest) SELECTED = chest;
+    if (profile) CURRENT_PROFILE = profile;
   }
 
   // --------------------------
   // WALL DEFINITIONS
   // --------------------------
-  const WALLS = [
-    { name: "East wall",  range: "A–I", letters: "ABCDEFGHI".split("") },
-    { name: "South wall", range: "J–O", letters: "JKLMNO".split("") },
-    { name: "West wall",  range: "P–X", letters: "PQRSTUVWX".split("") },
-  ];
+  // Derived per-profile: either from the profile's config.json "walls",
+  // or by grouping every column letter found in sorter_layout.csv into one wall.
+  let WALLS = [];
 
-  function binId(letter, pod) { return `${letter}${pod}`; }
-  function slotOrder() { return [1,2,3,4,5,6,7,8,9]; }
+  function binId(letter, cluster) { return `${letter}${cluster}`; }
 
   function hashHue(str) {
     let h = 0;
@@ -621,6 +623,7 @@
 
   const elSearch = document.getElementById("search");
   const elClear = document.getElementById("clear");
+  const elProfileSelect = document.getElementById("profileSelect");
 
   const elDChest = document.getElementById("dChest");
   const elDCat = document.getElementById("dCat");
@@ -633,6 +636,12 @@
   const elDiscSection = document.getElementById("discSection");
   const elDiscList = document.getElementById("discList");
   const elDiscMeta = document.getElementById("discMeta");
+
+  let PROFILES = [];               // [{id, label, walls}]
+  let CURRENT_PROFILE = null;      // profile id, e.g. "main_barn"
+  let PROFILE_BASE = "";           // e.g. "profiles/main_barn/"
+  let CLUSTERS_BY_COL = new Map(); // column letter -> [cluster,...] sorted
+  let SLOTS_BY_BIN = new Map();    // bin (e.g. "A1") -> [slotNumber,...] sorted
 
   let DATA = [];
   let INDEX = new Map();         // chestId -> row
@@ -728,7 +737,7 @@
 
   async function loadInventory() {
     try {
-      const res = await fetch("actual_inventory.csv", { cache: "no-store" });
+      const res = await fetch(`${PROFILE_BASE}actual_inventory.csv`, { cache: "no-store" });
       if (!res.ok) return;
       const lastMod = res.headers.get("Last-Modified");
       if (lastMod) {
@@ -792,10 +801,17 @@
     }
   }
 
+  function naturalSort(a, b) {
+    return a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" });
+  }
+
   function buildIndexes(rows) {
     INDEX = new Map();
     CAT_INDEX = new Map();
     DESC_TO_CHEST = new Map();
+
+    const clusterSets = new Map(); // col -> Set(cluster)
+    const slotSets = new Map();    // bin -> Set(number)
 
     for (const r of rows) {
       INDEX.set(r.chestId, r);
@@ -815,7 +831,37 @@
         const descKey = r.desc.toLowerCase();
         if (!DESC_TO_CHEST.has(descKey)) DESC_TO_CHEST.set(descKey, r.chestId);
       }
+
+      if (r.col && r.cluster) {
+        if (!clusterSets.has(r.col)) clusterSets.set(r.col, new Set());
+        clusterSets.get(r.col).add(r.cluster);
+
+        if (r.number) {
+          const bin = binId(r.col, r.cluster);
+          if (!slotSets.has(bin)) slotSets.set(bin, new Set());
+          slotSets.get(bin).add(r.number);
+        }
+      }
     }
+
+    CLUSTERS_BY_COL = new Map();
+    for (const [col, set] of clusterSets) CLUSTERS_BY_COL.set(col, Array.from(set).sort(naturalSort));
+
+    SLOTS_BY_BIN = new Map();
+    for (const [bin, set] of slotSets) SLOTS_BY_BIN.set(bin, Array.from(set).sort(naturalSort));
+  }
+
+  // Wall groupings come from the profile's config.json when present;
+  // otherwise every column letter found in the data is shown as one continuous wall.
+  function deriveWalls(rows, profileMeta) {
+    const columns = Array.from(new Set(rows.map(r => r.col).filter(Boolean))).sort(naturalSort);
+    if (profileMeta?.walls?.length) {
+      const walls = profileMeta.walls
+        .map(w => ({ name: w.name || "", letters: (w.letters || []).filter(l => columns.includes(l)) }))
+        .filter(w => w.letters.length);
+      if (walls.length) return walls;
+    }
+    return columns.length ? [{ name: "", letters: columns }] : [];
   }
 
   function getRow(chestId) { return INDEX.get(chestId); }
@@ -850,7 +896,7 @@
     elDPodList.innerHTML = "";
     elDInvSection.style.display = "none";
 
-    for (let n = 1; n <= 9; n++) {
+    for (const n of (SLOTS_BY_BIN.get(bin) || [])) {
       const cid = `${bin}-${n}`;
       const r = getRow(cid);
       const invItems = INV_LOADED
@@ -1035,8 +1081,8 @@
         const col = document.createElement("div");
         col.className = "col";
 
-        for (const pod of [1, 2]) {
-          const bin = binId(letter, pod);
+        for (const cluster of (CLUSTERS_BY_COL.get(letter) || [])) {
+          const bin = binId(letter, cluster);
           const podWrap = document.createElement("div");
           podWrap.className = "pod";
 
@@ -1066,7 +1112,7 @@
 
           let podHasMatch = false;
 
-          for (const n of slotOrder()) {
+          for (const n of (SLOTS_BY_BIN.get(bin) || [])) {
             const chestId = `${bin}-${n}`;
             const row = getRow(chestId);
 
@@ -1151,9 +1197,9 @@
   }
 
   async function reload() {
-    elStatus.textContent = "Loading sorter_layout.csv…";
+    elStatus.textContent = `Loading ${PROFILE_BASE}sorter_layout.csv…`;
     try {
-      const res = await fetch("sorter_layout.csv", { cache: "no-store" });
+      const res = await fetch(`${PROFILE_BASE}sorter_layout.csv`, { cache: "no-store" });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const text = await res.text();
       const { data } = Papa.parse(text, { header: true, skipEmptyLines: true });
@@ -1172,7 +1218,7 @@
         };
       });
       buildIndexes(DATA);
-      applyURLHash();
+      WALLS = deriveWalls(DATA, PROFILES.find(p => p.id === CURRENT_PROFILE));
       elStatus.textContent = "";
       renderAll();
       if (SELECTED) {
@@ -1241,8 +1287,96 @@
     }
   });
 
-  // initial load — name map loads before inventory so display names are ready for discrepancy matching
-  reload().then(loadNameMap).then(loadInventory);
+  // --------------------------
+  // PROFILES
+  // --------------------------
+  // profiles.json is committed (public); profiles.local.json is gitignored so you can
+  // list extra local-only sorters without ever publishing them.
+  async function loadProfileIds() {
+    const ids = [];
+    const seen = new Set();
+    for (const path of ["profiles.json", "profiles.local.json"]) {
+      try {
+        const res = await fetch(path, { cache: "no-store" });
+        if (!res.ok) continue;
+        const json = await res.json();
+        for (const id of (json.profiles || [])) {
+          if (!seen.has(id)) { seen.add(id); ids.push(id); }
+        }
+      } catch (e) {
+        // file missing or invalid — skip
+      }
+    }
+    return ids.length ? ids : ["main_barn"];
+  }
+
+  async function loadProfileMeta(id) {
+    try {
+      const res = await fetch(`profiles/${id}/config.json`, { cache: "no-store" });
+      if (res.ok) {
+        const cfg = await res.json();
+        return { id, label: cfg.label || id, walls: Array.isArray(cfg.walls) ? cfg.walls : null };
+      }
+    } catch (e) {
+      // no config.json — that's fine, walls will be derived from the data
+    }
+    return { id, label: id, walls: null };
+  }
+
+  function populateProfileSelector() {
+    elProfileSelect.innerHTML = "";
+    for (const p of PROFILES) {
+      const opt = document.createElement("option");
+      opt.value = p.id;
+      opt.textContent = p.label;
+      elProfileSelect.appendChild(opt);
+    }
+    elProfileSelect.value = CURRENT_PROFILE;
+    // Hide the selector when there's nothing to choose between (e.g. the public deployment)
+    elProfileSelect.style.display = PROFILES.length > 1 ? "" : "none";
+  }
+
+  async function loadProfileData(id) {
+    const meta = PROFILES.find(p => p.id === id) || PROFILES[0];
+    CURRENT_PROFILE = meta.id;
+    PROFILE_BASE = `profiles/${meta.id}/`;
+    elProfileSelect.value = meta.id;
+
+    INVENTORY = new Map();
+    INV_LOADED = false;
+    DISCREPANCIES = [];
+    document.getElementById("invTimestamp").textContent = "";
+
+    await reload();
+    await loadInventory();
+  }
+
+  async function switchProfile(id) {
+    if (id === CURRENT_PROFILE) return;
+    SELECTED = null;
+    ACTIVE_FILTER = "";
+    elSearch.value = "";
+    await loadProfileData(id);
+    updateURLHash();
+  }
+
+  elProfileSelect.addEventListener("change", () => switchProfile(elProfileSelect.value));
+
+  async function init() {
+    const ids = await loadProfileIds();
+    PROFILES = await Promise.all(ids.map(loadProfileMeta));
+
+    applyURLHash(); // may set CURRENT_PROFILE / ACTIVE_FILTER / SELECTED from the URL
+    if (!CURRENT_PROFILE || !PROFILES.some(p => p.id === CURRENT_PROFILE)) {
+      CURRENT_PROFILE = PROFILES[0].id;
+    }
+
+    populateProfileSelector();
+    await loadNameMap(); // shared across profiles — load before inventory so display names are ready
+    await loadProfileData(CURRENT_PROFILE);
+  }
+
+  init();
 </script>
 </body>
 </html>
