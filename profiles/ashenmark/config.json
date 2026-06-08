@@ -1,6 +1,6 @@
 {
   "label": "AshenMark",
   "walls": [
-    { "name": "West wall", "letters": ["A","B","C"] }
+    { "name": "West wall", "letters": ["A","B","C","D","E"] }
   ]
 }
